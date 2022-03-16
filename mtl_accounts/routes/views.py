@@ -3,8 +3,8 @@ import os
 from dotenv import load_dotenv
 from fastapi import APIRouter, Request
 from fastapi.responses import HTMLResponse
-from util.authentication import create_jwt, decode_jwt
-from util.microsoft import MicrosoftCustomSSO
+from mtl_accounts.util.authentication import create_jwt, decode_jwt
+from mtl_accounts.util.microsoft import MicrosoftCustomSSO
 
 load_dotenv(verbose=True)
 

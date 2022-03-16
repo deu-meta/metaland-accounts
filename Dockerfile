@@ -15,4 +15,5 @@ COPY . .
 
 EXPOSE 8000
 
-CMD ["python", "run.py"]
+# Add --proxy-headers to trust proxy like Nginx or Traefik.
+CMD ["uvicorn", "mtl_accounts:app", "--proxy-headers", "--host", "0.0.0.0", "--port", "8000"]

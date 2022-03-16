@@ -2,7 +2,7 @@ from typing import Dict
 
 from fastapi_sso.sso.base import OpenID
 
-from util.base import CustomSSOBase
+from .base import CustomSSOBase
 
 
 class MicrosoftCustomSSO(CustomSSOBase):
