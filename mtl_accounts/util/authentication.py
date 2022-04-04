@@ -3,30 +3,22 @@ from time import time
 from typing import Dict
 
 import jwt
-from dotenv import load_dotenv
 from fastapi import HTTPException, Request
 from starlette.responses import JSONResponse
 
-load_dotenv(verbose=True)
-
 SECRET_KEY = os.getenv("SECRET_KEY")
-ALGORITHM = "HS256"
+ALGORITHM = os.getenv("ALGORITHM")
 
 
-def create_jwt(user: Dict) -> Dict[str, str]:
-    expires = {"expires": time() + 600}
+def create_jwt(user: Dict, expiraton: int) -> Dict[str, str]:
+    expires = {"exp": time() + expiraton}
     payload = dict(user, **expires)
 
     token = jwt.encode(payload=payload, key=SECRET_KEY, algorithm=ALGORITHM)
-
-    response = JSONResponse({"status": "authenticated"})
-    response.set_cookie(key="set-cookie", value=token, httponly=True)
-    return response
+    return token
 
 
-def decode_jwt(token: str):
-    decoded_token = jwt.decode(jwt=token, key=SECRET_KEY, algorithms=[ALGORITHM])
-    if decoded_token["expires"] >= time():
-        return decoded_token
-    else:
-        raise HTTPException(status_code=400, detail="Certification Expired")
+async def decode_jwt(access_token):
+    access_token = access_token.replace("Bearer ", "")
+    payload = jwt.decode(jwt=access_token, key=SECRET_KEY, algorithms=[ALGORITHM])
+    return payload
