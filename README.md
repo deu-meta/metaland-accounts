@@ -19,7 +19,7 @@ echo "MARIADB_PORT=[<b>MARIADB_PORT</b>]" >> .env
 echo "MARIADB_DATABASE=[<b>MARIADB_DATABASE</b>]" >> .env
 </code></pre>
 
-### Run Attendance
+### Run
 
 <pre><code>docker-compose up</code></pre>
 
