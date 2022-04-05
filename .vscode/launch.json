@@ -6,13 +6,13 @@
             "request": "launch",
             "module": "uvicorn",
             "args": [
-                "mtl_accounts:app",
+                "mtl_accounts.main:app",
                 "--reload",
                 "--port",
                 "8000"
             ],
             "jinja": true,
-            "justMyCode": true
+            "justMyCode": true,
         }
     ]
 }
