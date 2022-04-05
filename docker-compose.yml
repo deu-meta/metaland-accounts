@@ -7,9 +7,7 @@ services:
     ports:
       - 8000:8000
     volumes:
-      # 개발 환경에서 소스코드를 수정했을 때 일일이 빌드안해도 적용할 수 있도록
-      # 로컬의 소스코드를 볼륨으로 탑재
-      - ./app:/app
+      - ./mtl_accounts:/mtl_accounts
     environment:
       - OAUTHLIB_INSECURE_TRANSPORT=${OAUTHLIB_INSECURE_TRANSPORT}
       - MY_CLIENT_ID=${MY_CLIENT_ID}
@@ -17,4 +15,36 @@ services:
       - MY_CLIENT_TENANT=${MY_CLIENT_TENANT}
       - REDIRECT_URL=${REDIRECT_URL}
       - SECRET_KEY=${SECRET_KEY}
-      - ALGORITHM=${HS256}
+      - ALGORITHM=${ALGORITHM}
+      - POSTGRESQL_USER=${POSTGRESQL_USER}
+      - POSTGRESQL_PASSWORD=${POSTGRESQL_PASSWORD}
+      - POSTGRESQL_HOST=mtl_postgresql
+      - POSTGRESQL_PORT=${POSTGRESQL_PORT}
+      - POSTGRESQL_DATABASE=${POSTGRESQL_DATABASE}
+      - REDIS_HOST=mtl_redis
+      - REDIS_PORT=${REDIS_PORT}
+      - REDIS_DATABASE=${REDIS_DATABASE}
+
+  mtl_redis:
+    image: redis:alpine
+    command: redis-server --port 6379
+    container_name: mtl_redis
+    hostname: mtl_redis
+    labels:
+      - "name=redis"
+      - "mode=standalone"
+    ports:
+      - 26379:6379
+
+  mtl_postgresql:
+    image: postgres
+    restart: always
+    container_name: mtl_postgresql
+    environment:
+      POSTGRES_PASSWORD: ${POSTGRESQL_PASSWORD}
+      POSTGRES_USER: ${POSTGRESQL_USER}
+      POSTGRES_DB: ${POSTGRESQL_DATABASE}
+    ports:
+      - 25432:5432
+    volumes:
+      - ./db/:/docker-entrypoint-initdb.d
