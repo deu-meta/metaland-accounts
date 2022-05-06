@@ -16,8 +16,8 @@ from starlette.middleware.base import RequestResponseEndpoint
 from starlette.requests import Request
 from starlette.responses import JSONResponse, Response
 
-SECRET_KEY = os.getenv("SECRET_KEY")
-ALGORITHM = os.getenv("ALGORITHM")
+SECRET_KEY = os.getenv("MTL_ACCOUNTS_SECRET_KEY")
+ALGORITHM = os.getenv("MTL_ACCOUNTS_JWT_ALGORITHM")
 EXCEPT_PATH_LIST = ["/", "/openapi.json", "/user/verify"]
 EXCEPT_PATH_REGEX = "^(/docs|/redoc|/jwt)"
 
