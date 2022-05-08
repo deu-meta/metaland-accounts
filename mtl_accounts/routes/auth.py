@@ -16,17 +16,17 @@ router = APIRouter()
 security = HTTPBearer()
 
 microsoft_sso = MicrosoftCustomSSO(
-    client_id=os.getenv("MY_CLIENT_ID"),
-    client_secret=os.getenv("MY_CLIENT_SECRET"),
-    client_tenant=os.getenv("MY_CLIENT_TENANT"),
-    redirect_uri=os.getenv("REDIRECT_URL"),
+    client_id=os.getenv("MTL_ACCOUNTS_OAUTH2_MICROSOFT_CLIENT_ID"),
+    client_secret=os.getenv("MTL_ACCOUNTS_OAUTH2_MICROSOFT_SECRET"),
+    client_tenant=os.getenv("MTL_ACCOUNTS_OAUTH2_MICROSOFT_CLIENT_TENANT"),
+    redirect_uri=os.getenv("MTL_ACCOUNTS_OAUTH2_MICROSOFT_REDIRECT_URL"),
     allow_insecure_http=True,
     use_state=False,
 )
 
 
 class Settings(BaseModel):
-    authjwt_secret_key: str = os.getenv("SECRET_KEY")
+    authjwt_secret_key: str = os.getenv("MTL_ACCOUNTS_SECRET_KEY")
     # 쿠키에서 JWT를 저장하고 가져오도록 애플리케이션 구성
     authjwt_token_location: set = {"cookies", "headers"}
     # Disable CSRF Protection for this example. default is True
