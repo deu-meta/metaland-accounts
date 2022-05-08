@@ -7,7 +7,7 @@ services:
     ports:
       - 8000:8000
     volumes:
-      - ./mtl_accounts:/mtl_accounts
+      - .:/metaland-accounts
     environment:
       - OAUTHLIB_INSECURE_TRANSPORT=${OAUTHLIB_INSECURE_TRANSPORT}
       - MY_CLIENT_ID=${MY_CLIENT_ID}
