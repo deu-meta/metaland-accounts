@@ -24,6 +24,8 @@ microsoft_sso = MicrosoftCustomSSO(
     use_state=False,
 )
 
+JWT_REDIRECT_URL = os.getenv("MTL_ACCOUNTS_JWT_REDIRECT_URL")
+
 
 class Settings(BaseModel):
     authjwt_secret_key: str = os.getenv("MTL_ACCOUNTS_SECRET_KEY")
@@ -64,9 +66,14 @@ async def microsoft_callback(request: Request, Authorize: AuthJWT = Depends(), s
         user.role = account.role
 
     access_token = Authorize.create_access_token(subject=user.mail, user_claims=user.dict())
+    response = RedirectResponse(f"{JWT_REDIRECT_URL}#access_token={access_token}")
+
     refresh_token = Authorize.create_refresh_token(subject=user.mail, user_claims=user.dict())
-    Authorize.set_refresh_cookies(refresh_token)
-    return {"access_token": access_token, "refresh_token": refresh_token}
+
+    # max_age = 60 * 60 * 24 * 14 -> 14 days
+    Authorize.set_refresh_cookies(refresh_token, response, max_age=1209600)
+
+    return response
 
 
 @router.post("/refresh")
