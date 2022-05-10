@@ -1,6 +1,7 @@
 import os
 
 from fastapi import APIRouter, Depends, Request
+from fastapi.responses import RedirectResponse
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from fastapi_jwt_auth import AuthJWT
 from mtl_accounts.database.conn import db
@@ -81,8 +82,9 @@ def refresh(Authorize: AuthJWT = Depends()):
     Authorize.jwt_refresh_token_required()
     current_user = Authorize.get_raw_jwt()
     current_user["type"] = "access"
-    new_access_token = Authorize.create_access_token(subject=current_user["sub"], user_claims=current_user)
-    return {"new_access_token": new_access_token}
+    access_token = Authorize.create_access_token(subject=current_user["sub"], user_claims=current_user)
+
+    return {"access_token": access_token}
 
 
 @router.delete("/delete")
