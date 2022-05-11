@@ -1,29 +1,36 @@
+import inspect
 import os
+import re
+import sys
 
 import uvicorn
 from dotenv import load_dotenv
-from fastapi import Depends, FastAPI, Request
+from fastapi import FastAPI, Request
+from fastapi.openapi.utils import get_openapi
 from fastapi.responses import JSONResponse
-from fastapi.security import APIKeyHeader, HTTPBearer
+from fastapi.routing import APIRoute
+from fastapi_jwt_auth import AuthJWT
 from fastapi_jwt_auth.exceptions import AuthJWTException
+from pydantic import BaseModel
 from starlette.middleware.base import BaseHTTPMiddleware
 from starlette.middleware.cors import CORSMiddleware
 
-from mtl_accounts.database.conn import db
-from mtl_accounts.errors import exceptions as ex
 from mtl_accounts.middlewares.token_validator import access_control
-from mtl_accounts.middlewares.trusted_hosts import TrustedHostMiddleware
 
-from .routes import auth, users
+# https://nuggy875.tistory.com/106
+sys.path.append(os.path.dirname(os.path.abspath(os.path.dirname(__file__))))
 
 load_dotenv(verbose=True)
+
+from mtl_accounts.database.conn import db
+from mtl_accounts.middlewares.trusted_hosts import TrustedHostMiddleware
+from mtl_accounts.routes import auth, users
 
 
 def create_app():
     app = FastAPI()
 
     db.init_app(app)
-
     app.add_middleware(middleware_class=BaseHTTPMiddleware, dispatch=access_control)
     app.add_middleware(
         CORSMiddleware,
@@ -41,21 +48,73 @@ def create_app():
 
     # middleware 은 stack 으로 동작하기때문에 가장 나중에 넣은것부터 실행한다.
 
+    class Settings(BaseModel):
+        authjwt_secret_key: str = os.getenv("MTL_ACCOUNTS_SECRET_KEY")
+        # 쿠키에서 JWT를 저장하고 가져오도록 애플리케이션 구성
+        authjwt_token_location: set = {"cookies", "headers"}
+        # Disable CSRF Protection for this example. default is True
+        authjwt_cookie_csrf_protect: bool = False
+
+    @AuthJWT.load_config
+    def get_config():
+        return Settings()
+
     @app.exception_handler(AuthJWTException)
     def authjwt_exception_handler(request: Request, exc: AuthJWTException):
         return JSONResponse(status_code=exc.status_code, content={"detail": exc.message})
 
-    @app.exception_handler(ex.APIException)
-    def api_exception_handler(request: Request, error: ex.APIException):
-        error_dict = dict(status=error.status_code, msg=error.msg, detail=error.detail, code=error.code)
-        return JSONResponse(status_code=error.status_code, content=error_dict)
+    @app.exception_handler(Exception)
+    def exception_handler(request: Request, exc: Exception):
+        return JSONResponse(status_code=exc.status_code, content={"detail": exc.message})
 
     app.include_router(router=auth.router, tags=["JWT"], prefix="/jwt")
     app.include_router(router=users.router, tags=["Users"], prefix="/user")
+
+    def custom_openapi():
+        if app.openapi_schema:
+            return app.openapi_schema
+
+        openapi_schema = get_openapi(
+            title="My Auth API",
+            version="1.0",
+            description="An API with an Authorize Button",
+            routes=app.routes,
+        )
+
+        openapi_schema["components"]["securitySchemes"] = {
+            "Bearer Auth": {
+                "type": "apiKey",
+                "in": "header",
+                "name": "Authorization",
+                "description": "Enter: **'Bearer &lt;JWT&gt;'**, where JWT is the access token",
+            }
+        }
+
+        # Get all routes where jwt_optional() or jwt_required
+        api_router = [route for route in app.routes if isinstance(route, APIRoute)]
+
+        for route in api_router:
+            path = getattr(route, "path")
+            endpoint = getattr(route, "endpoint")
+            methods = [method.lower() for method in getattr(route, "methods")]
+
+            for method in methods:
+                # access_token
+                if (
+                    re.search("jwt_required", inspect.getsource(endpoint))
+                    or re.search("fresh_jwt_required", inspect.getsource(endpoint))
+                    or re.search("jwt_optional", inspect.getsource(endpoint))
+                ):
+                    openapi_schema["paths"][path][method]["security"] = [{"Bearer Auth": []}]
+
+        app.openapi_schema = openapi_schema
+        return app.openapi_schema
+
+    app.openapi = custom_openapi
     return app
 
 
 app = create_app()
 
-# if __name__ == "__main__":
-#     uvicorn.run("main:app", host="0.0.0.0", port=8080, reload=True)
+if __name__ == "__main__":
+    uvicorn.run("main:app", host="0.0.0.0", port=8000, reload=True)
