@@ -3,8 +3,6 @@ from time import time
 from typing import Dict
 
 import jwt
-from fastapi import HTTPException, Request
-from starlette.responses import JSONResponse
 
 SECRET_KEY = os.getenv("MTL_ACCOUNTS_SECRET_KEY")
 ALGORITHM = os.getenv("MTL_ACCOUNTS_JWT_ALGORITHM")

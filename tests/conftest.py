@@ -1,8 +1,9 @@
 import os
-import sys
 
 import pytest
-from faker import Faker
+from dotenv import load_dotenv
+
+load_dotenv(verbose=True)
 from mtl_accounts.main import create_app
 from sqlalchemy import create_engine
 from sqlalchemy.orm import scoped_session, sessionmaker

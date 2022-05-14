@@ -1,13 +1,8 @@
-import base64
-import hmac
 import os
 import re
 import time
-import typing
 
-import jwt
 import mtl_accounts.errors.exceptions as ex
-from dotenv import load_dotenv
 from jwt.exceptions import DecodeError, ExpiredSignatureError
 from mtl_accounts.errors.exceptions import APIException
 from mtl_accounts.models import UserToken
@@ -18,7 +13,7 @@ from starlette.responses import JSONResponse, Response
 
 SECRET_KEY = os.getenv("MTL_ACCOUNTS_SECRET_KEY")
 ALGORITHM = os.getenv("MTL_ACCOUNTS_JWT_ALGORITHM")
-EXCEPT_PATH_LIST = ["/", "/openapi.json", "/user/verify"]
+EXCEPT_PATH_LIST = ["/", "/openapi.json", "/user/verify", "/user/verify"]
 EXCEPT_PATH_REGEX = "^(/docs|/redoc|/jwt)"
 
 
