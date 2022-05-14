@@ -2,7 +2,6 @@ import os
 
 from fastapi import APIRouter, Depends, Request
 from fastapi.responses import RedirectResponse
-from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from fastapi_jwt_auth import AuthJWT
 from mtl_accounts.database.conn import db
 from mtl_accounts.database.crud import create_users
@@ -42,23 +41,27 @@ async def microsoft_login():
 async def microsoft_callback(request: Request, Authorize: AuthJWT = Depends(), session: Session = Depends(db.session)):
     user = await microsoft_sso.verify_and_process(request)
 
-    account = session.query(Users).filter(Users.mail == user["mail"]).first()
+    account = session.query(Users).filter(Users.mail == user.email).first()
 
-    user = UserToken(**user, provider="office365", role="default")
+    user = UserToken(**user.dict(), provider="office365", role="default")
+    print(user)
     if account is None:
         create_users(session, user)
     else:
         user.role = account.role
 
-    access_token = Authorize.create_access_token(subject=user.mail, user_claims=user.dict())
+    access_token = Authorize.create_access_token(subject=user.email, user_claims=user.dict())
     response = RedirectResponse(f"{JWT_REDIRECT_URL}#access_token={access_token}")
 
-    refresh_token = Authorize.create_refresh_token(subject=user.mail, user_claims=user.dict())
+    refresh_token = Authorize.create_refresh_token(subject=user.email, user_claims=user.dict())
 
     # max_age = 60 * 60 * 24 * 14 -> 14 days
     Authorize.set_refresh_cookies(refresh_token, response, max_age=1209600)
 
-    return response
+    if response.status_code == 307:
+        return {"access_token": access_token, "refresh_token": refresh_token}
+    else:
+        return response
 
 
 @router.post("/refresh")
