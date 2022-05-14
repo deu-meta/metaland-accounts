@@ -6,11 +6,14 @@ class MessageOk(BaseModel):
     message: str = Field(default="OK")
 
 
-class UserToken(BaseModel):
-    displayName: str = None
-    givenName: str = None
-    jobTitle: str = None
-    mail: str = None
+class User(BaseModel):
+    display_name: str = None
+    given_name: str = None
+    job_title: str = None
+    email: str = None
+
+
+class UserToken(User):
     provider: str = None
     role: str = None
 
