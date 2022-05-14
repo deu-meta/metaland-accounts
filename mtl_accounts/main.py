@@ -1,10 +1,7 @@
 import inspect
 import os
 import re
-import sys
 
-import uvicorn
-from dotenv import load_dotenv
 from fastapi import FastAPI, Request
 from fastapi.openapi.utils import get_openapi
 from fastapi.responses import JSONResponse
@@ -15,16 +12,12 @@ from pydantic import BaseModel
 from starlette.middleware.base import BaseHTTPMiddleware
 from starlette.middleware.cors import CORSMiddleware
 
-from mtl_accounts.middlewares.token_validator import access_control
-
-# https://nuggy875.tistory.com/106
-sys.path.append(os.path.dirname(os.path.abspath(os.path.dirname(__file__))))
-
-load_dotenv(verbose=True)
-
 from mtl_accounts.database.conn import db
+from mtl_accounts.middlewares.token_validator import access_control
 from mtl_accounts.middlewares.trusted_hosts import TrustedHostMiddleware
 from mtl_accounts.routes import auth, users
+
+# https://nuggy875.tistory.com/106
 
 
 def create_app():
@@ -115,6 +108,3 @@ def create_app():
 
 
 app = create_app()
-
-if __name__ == "__main__":
-    uvicorn.run("main:app", host="0.0.0.0", port=8000, reload=True)
