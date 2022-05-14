@@ -4,7 +4,7 @@ from sqlalchemy.orm import Session
 
 
 def create_users(session: Session, user: UserToken) -> Users:
-    users = Users(mail=user.mail, displayName=user.displayName, givenName=user.givenName, jobTitle=user.jobTitle, provider=user.provider)
+    users = Users(mail=user.email, displayName=user.display_name, givenName=user.given_name, jobTitle=user.job_title, provider=user.provider)
     session.add(users)
     session.commit()
     session.refresh(users)
