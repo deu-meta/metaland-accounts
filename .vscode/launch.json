@@ -4,13 +4,7 @@
             "name": "metaland-accounts: debug",
             "type": "python",
             "request": "launch",
-            "module": "uvicorn",
-            "args": [
-                "mtl_accounts.main:app",
-                "--reload",
-                "--port",
-                "8000"
-            ],
+            "program": "${workspaceFolder}\\run.py",
             "jinja": true,
             "justMyCode": true,
         }
