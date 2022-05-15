@@ -15,7 +15,7 @@ from starlette.middleware.cors import CORSMiddleware
 from mtl_accounts.database.conn import db
 from mtl_accounts.middlewares.token_validator import access_control
 from mtl_accounts.middlewares.trusted_hosts import TrustedHostMiddleware
-from mtl_accounts.routes import auth, users
+from mtl_accounts.routes import kakao, microsoft, users
 
 # https://nuggy875.tistory.com/106
 
@@ -60,7 +60,8 @@ def create_app():
     def exception_handler(request: Request, exc: Exception):
         return JSONResponse(status_code=exc.status_code, content={"detail": exc.message})
 
-    app.include_router(router=auth.router, tags=["JWT"], prefix="/jwt")
+    app.include_router(router=kakao.router, tags=["JWT"], prefix="/jwt")
+    app.include_router(router=microsoft.router, tags=["JWT"], prefix="/jwt")
     app.include_router(router=users.router, tags=["Users"], prefix="/user")
 
     def custom_openapi():
