@@ -6,19 +6,20 @@ class MessageOk(BaseModel):
     message: str = Field(default="OK")
 
 
-class User(BaseModel):
+class OpenID(BaseModel):
     display_name: str = None
     given_name: str = None
     job_title: str = None
     email: str = None
+    provider: str = None
 
 
-class UserToken(User):
+class User(OpenID):
     provider: str = None
     role: str = None
 
 
-class MinecraftToken(BaseModel):
+class Minecraft(BaseModel):
     id: str = None
     provider: str = None
     displayName: str = None

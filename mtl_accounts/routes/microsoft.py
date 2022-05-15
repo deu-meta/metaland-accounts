@@ -6,8 +6,8 @@ from fastapi_jwt_auth import AuthJWT
 from mtl_accounts.database.conn import db
 from mtl_accounts.database.crud import create_users
 from mtl_accounts.database.schema import Users
-from mtl_accounts.models import UserToken
-from mtl_accounts.util.microsoft import MicrosoftCustomSSO
+from mtl_accounts.models import User
+from mtl_accounts.util.sso.microsoft import MicrosoftCustomSSO
 from sqlalchemy.orm import Session
 
 router = APIRouter()
@@ -43,7 +43,7 @@ async def microsoft_callback(request: Request, Authorize: AuthJWT = Depends(), s
 
     account = session.query(Users).filter(Users.mail == user.email).first()
 
-    user = UserToken(**user.dict(), provider="office365", role="default")
+    user = User(**user.dict(), role="default")
     print(user)
     if account is None:
         create_users(session, user)
@@ -58,10 +58,7 @@ async def microsoft_callback(request: Request, Authorize: AuthJWT = Depends(), s
     # max_age = 60 * 60 * 24 * 14 -> 14 days
     Authorize.set_refresh_cookies(refresh_token, response, max_age=1209600)
 
-    if response.status_code == 307:
-        return {"access_token": access_token, "refresh_token": refresh_token}
-    else:
-        return response
+    return response
 
 
 @router.post("/refresh")

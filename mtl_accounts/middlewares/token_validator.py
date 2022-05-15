@@ -5,7 +5,7 @@ import time
 import mtl_accounts.errors.exceptions as ex
 from jwt.exceptions import DecodeError, ExpiredSignatureError
 from mtl_accounts.errors.exceptions import APIException
-from mtl_accounts.models import UserToken
+from mtl_accounts.models import User
 from mtl_accounts.util.authentication import decode_jwt
 from starlette.middleware.base import RequestResponseEndpoint
 from starlette.requests import Request
@@ -40,7 +40,7 @@ async def access_control(request: Request, call_next: RequestResponseEndpoint) -
             raise ex.NotFoundAuthEx()
         try:
             token_info = await decode_jwt(access_token=str(headers.get("authorization")).split(" ")[1])
-            request.state.user = UserToken(**token_info)
+            request.state.user = User(**token_info)
         except ExpiredSignatureError:
             raise ex.TokenInvalidEx()
         except DecodeError:
