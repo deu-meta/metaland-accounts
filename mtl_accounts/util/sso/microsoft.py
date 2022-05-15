@@ -1,6 +1,6 @@
 from typing import Dict
 
-from mtl_accounts.models import User
+from mtl_accounts.models import OpenID
 
 from .base import CustomSSOBase
 
@@ -18,5 +18,11 @@ class MicrosoftCustomSSO(CustomSSOBase):
         }
 
     @classmethod
-    async def openid_from_response(cls, response: dict) -> User:
-        return User(display_name=response["displayName"], given_name=response["givenName"], job_title=response["jobTitle"], email=response["mail"])
+    async def openid_from_response(cls, response: dict) -> OpenID:
+        return OpenID(
+            display_name=response["displayName"],
+            given_name=response["givenName"],
+            job_title=response["jobTitle"],
+            email=response["mail"],
+            provider=cls.provider,
+        )
