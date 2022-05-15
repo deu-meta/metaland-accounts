@@ -10,7 +10,7 @@ from mtl_accounts.database.crud import create_mincraft
 from mtl_accounts.database.redis import redis_conn
 from mtl_accounts.database.schema import Minecraft_Account, Users
 from mtl_accounts.errors import exceptions as ex
-from mtl_accounts.models import MessageOk, MinecraftToken
+from mtl_accounts.models import MessageOk, Minecraft
 from sqlalchemy.orm import Session
 from starlette.requests import Request
 
@@ -20,7 +20,7 @@ security = HTTPBearer()
 
 
 @router.post("/verify")
-async def post_verify(mincraftaccount: MinecraftToken, session: Session = Depends(db.session)):
+async def post_verify(mincraftaccount: Minecraft, session: Session = Depends(db.session)):
     result = session.query(Minecraft_Account).filter(Minecraft_Account.id == mincraftaccount.id).first()
     if result is not None:
         raise ex.AccountExistsEx
@@ -43,7 +43,7 @@ async def get_verify(request: Request, uuid: str, Authorize: AuthJWT = Depends()
     if minecraft is None:
         raise ex.AuthExpiredEx
 
-    create_mincraft(session, MinecraftToken(id=minecraft[0], provider=minecraft[1], displayName=minecraft[2]), user_mail)
+    create_mincraft(session, Minecraft(id=minecraft[0], provider=minecraft[1], displayName=minecraft[2]), user_mail)
 
     rd.delete(uuid)
     return MessageOk()
