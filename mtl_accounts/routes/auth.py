@@ -58,10 +58,7 @@ async def microsoft_callback(request: Request, Authorize: AuthJWT = Depends(), s
     # max_age = 60 * 60 * 24 * 14 -> 14 days
     Authorize.set_refresh_cookies(refresh_token, response, max_age=1209600)
 
-    if response.status_code == 307:
-        return {"access_token": access_token, "refresh_token": refresh_token}
-    else:
-        return response
+    return response
 
 
 @router.post("/refresh")
