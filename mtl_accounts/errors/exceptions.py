@@ -1,5 +1,3 @@
-
-
 class StatusCode:
     HTTP_500 = 500
     HTTP_400 = 400
@@ -41,5 +39,32 @@ class AuthExpiredEx(APIException):
         super().__init__(
             status_code=StatusCode.HTTP_401,
             msg=f"Authentication is expired",
+            ex=ex,
+        )
+
+
+class NotFoundAuthEx(APIException):
+    def __init__(self, ex: Exception = None):
+        super().__init__(
+            status_code=StatusCode.HTTP_401,
+            msg=f"Authorization 요청 헤더가 없습니다.",
+            ex=ex,
+        )
+
+
+class TokenInvalidEx(APIException):
+    def __init__(self, ex: Exception = None):
+        super().__init__(
+            status_code=StatusCode.HTTP_401,
+            msg=f"토큰값이 유효하지 않아 인증에 실패했습니다.",
+            ex=ex,
+        )
+
+
+class TokenDecodeEx(APIException):
+    def __init__(self, ex: Exception = None):
+        super().__init__(
+            status_code=StatusCode.HTTP_401,
+            msg=f"Authorization 요청 헤더의 토큰 타입이 유효하지 않습니다.",
             ex=ex,
         )
