@@ -1,14 +1,15 @@
-from typing import Dict
 from uuid import uuid4
 
-from black import Dict
 from fastapi import APIRouter, Depends
 from fastapi.security import HTTPBearer
 from fastapi_jwt_auth import AuthJWT
 from mtl_accounts.database.conn import db
-from mtl_accounts.database.crud import create_mincraft
+from mtl_accounts.database.crud import (
+    create_mincraft,
+    exists_mincraft,
+    get_profile,
+)
 from mtl_accounts.database.redis import redis_conn
-from mtl_accounts.database.schema import Minecraft_Account, Users
 from mtl_accounts.errors import exceptions as ex
 from mtl_accounts.models import MessageOk, Minecraft
 from sqlalchemy.orm import Session
@@ -21,9 +22,9 @@ security = HTTPBearer()
 
 @router.post("/verify")
 async def post_verify(mincraftaccount: Minecraft, session: Session = Depends(db.session)):
-    result = session.query(Minecraft_Account).filter(Minecraft_Account.id == mincraftaccount.id).first()
-    if result is not None:
+    if exists_mincraft(session, mincraftaccount.id):
         raise ex.AccountExistsEx
+
     rd = redis_conn()
     uuid = uuid4()
 
@@ -34,7 +35,7 @@ async def post_verify(mincraftaccount: Minecraft, session: Session = Depends(db.
 @router.get("/verify/{uuid}")
 async def get_verify(request: Request, uuid: str, Authorize: AuthJWT = Depends(), session: Session = Depends(db.session)):
     Authorize.jwt_required()
-    user_mail = Authorize.get_jwt_subject()
+    user_email = Authorize.get_jwt_subject()
 
     rd = redis_conn()
     minecraft = rd.lrange(uuid, 0, -1)
@@ -43,7 +44,7 @@ async def get_verify(request: Request, uuid: str, Authorize: AuthJWT = Depends()
     if minecraft is None:
         raise ex.AuthExpiredEx
 
-    create_mincraft(session, Minecraft(id=minecraft[0], provider=minecraft[1], displayName=minecraft[2]), user_mail)
+    create_mincraft(session, Minecraft(id=minecraft[0], provider=minecraft[1], display_name=minecraft[2]), user_email)
 
     rd.delete(uuid)
     return MessageOk()
@@ -54,20 +55,4 @@ async def get_verify(request: Request, Authorize: AuthJWT = Depends(), session: 
     Authorize.jwt_required()
     user_mail = Authorize.get_jwt_subject()
 
-    result = (
-        session.query(Minecraft_Account, Users)
-        .filter(Minecraft_Account.user_mail == Users.mail)
-        .filter(Minecraft_Account.user_mail == user_mail)
-        .first()
-    )
-    return result
-
-
-@router.put("/update-profile")
-async def update_profile(request: Request, user: Dict[str, str], Authorize: AuthJWT = Depends(), session: Session = Depends(db.session)):
-    Authorize.jwt_required()
-    user_mail = Authorize.get_jwt_subject()
-
-    session.query(Users).filter(Users.mail == user_mail).update(user)
-    session.commit()
-    return MessageOk()
+    return get_profile(session, user_mail)

@@ -2,19 +2,19 @@ CREATE SCHEMA metaland_accounts;
 
 CREATE TABLE metaland_accounts.minecraft_account (
     id character varying(50) NOT NULL,
-    user_mail character varying(50) DEFAULT NULL::character varying,
+    user_email character varying(50) DEFAULT NULL::character varying,
     provider character varying(50),
-    "displayName" character varying(50) DEFAULT NULL::character varying
+    "display_name" character varying(50) DEFAULT NULL::character varying
 );
 
 CREATE TABLE metaland_accounts.users (
-    mail character varying(50) NOT NULL,
+    email character varying(50) NOT NULL,
     role character varying(50),
-    phone character varying(50),
+    phone_number character varying(50),
     provider character varying(50),
-    "displayName" character varying(50) DEFAULT NULL::character varying,
-    "givenName" character varying(50),
-    "jobTitle" character varying(50)
+    "display_name" character varying(50) DEFAULT NULL::character varying,
+    "given_name" character varying(50),
+    "job_title" character varying(50)
 );
 
 
@@ -23,11 +23,11 @@ ALTER TABLE ONLY metaland_accounts.minecraft_account
 
 
 ALTER TABLE ONLY metaland_accounts.users
-    ADD CONSTRAINT users_pkey PRIMARY KEY (mail);
+    ADD CONSTRAINT users_pkey PRIMARY KEY (email);
 
 
 ALTER TABLE ONLY metaland_accounts.minecraft_account
-    ADD CONSTRAINT minecraft_account_user_email_fkey FOREIGN KEY (user_mail) REFERENCES metaland_accounts.users(mail);
+    ADD CONSTRAINT minecraft_account_user_eemail_fkey FOREIGN KEY (user_email) REFERENCES metaland_accounts.users(email);
 
 
 
