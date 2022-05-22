@@ -15,8 +15,8 @@ microsoft_sso = MicrosoftCustomSSO(
     client_secret=os.getenv("MTL_ACCOUNTS_OAUTH2_MICROSOFT_SECRET"),
     client_tenant=os.getenv("MTL_ACCOUNTS_OAUTH2_MICROSOFT_CLIENT_TENANT"),
     redirect_uri=os.getenv("MTL_ACCOUNTS_OAUTH2_MICROSOFT_REDIRECT_URL"),
-    allow_insecure_http=True,
-    use_state=False,
+    allow_insecure_http=True if os.getenv("MTL_ACCOUNTS_DEBUG", "false").lower() == "true" else False,
+    use_state=False if os.getenv("MTL_ACCOUNTS_DEBUG", "false").lower() == "true" else True,
 )
 
 JWT_REDIRECT_URL = os.getenv("MTL_ACCOUNTS_JWT_REDIRECT_URL")
