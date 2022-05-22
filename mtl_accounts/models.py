@@ -1,9 +1,17 @@
+from enum import Enum
+
 from pydantic import Field
 from pydantic.main import BaseModel
 
 
 class MessageOk(BaseModel):
     message: str = Field(default="OK")
+
+
+class Role(str, Enum):
+    admin = "admin"
+    staff = "staff"
+    default = "default"
 
 
 class OpenID(BaseModel):
@@ -15,11 +23,13 @@ class OpenID(BaseModel):
 
 
 class User(OpenID):
-    provider: str = None
-    role: str = None
+    role: str = Role.default.value
+
+    class Config:
+        orm_mode = True
 
 
 class Minecraft(BaseModel):
     id: str = None
     provider: str = None
-    displayName: str = None
+    display_name: str = None

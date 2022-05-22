@@ -9,13 +9,12 @@ from fastapi.routing import APIRoute
 from fastapi_jwt_auth import AuthJWT
 from fastapi_jwt_auth.exceptions import AuthJWTException
 from pydantic import BaseModel
-from starlette.middleware.base import BaseHTTPMiddleware
 from starlette.middleware.cors import CORSMiddleware
 
 from mtl_accounts.database.conn import db
-from mtl_accounts.middlewares.token_validator import access_control
+from mtl_accounts.errors.exceptions import APIException
 from mtl_accounts.middlewares.trusted_hosts import TrustedHostMiddleware
-from mtl_accounts.routes import kakao, microsoft, users
+from mtl_accounts.routes import admin, kakao, microsoft, users
 
 # https://nuggy875.tistory.com/106
 
@@ -24,7 +23,6 @@ def create_app():
     app = FastAPI()
 
     db.init_app(app)
-    app.add_middleware(middleware_class=BaseHTTPMiddleware, dispatch=access_control)
     app.add_middleware(
         CORSMiddleware,
         allow_origins=["*"],
@@ -57,12 +55,13 @@ def create_app():
         return JSONResponse(status_code=exc.status_code, content={"detail": exc.message})
 
     @app.exception_handler(Exception)
-    def exception_handler(request: Request, exc: Exception):
+    def exception_handler(request: Request, exc: APIException):
         return JSONResponse(status_code=exc.status_code, content={"detail": exc.message})
 
     app.include_router(router=kakao.router, tags=["JWT"], prefix="/jwt")
     app.include_router(router=microsoft.router, tags=["JWT"], prefix="/jwt")
     app.include_router(router=users.router, tags=["Users"], prefix="/user")
+    app.include_router(router=admin.router, tags=["Admin"], prefix="/admin")
 
     def custom_openapi():
         if app.openapi_schema:
