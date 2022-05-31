@@ -51,7 +51,7 @@ async def get_verify(request: Request, uuid: str, Authorize: AuthJWT = Depends()
 
 
 @router.get("/me")
-async def get_verify(request: Request, Authorize: AuthJWT = Depends(), session: Session = Depends(db.session)):
+async def profile(request: Request, Authorize: AuthJWT = Depends(), session: Session = Depends(db.session)):
     Authorize.jwt_required()
     user_mail = Authorize.get_jwt_subject()
 
