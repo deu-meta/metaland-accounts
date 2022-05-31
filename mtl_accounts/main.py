@@ -60,7 +60,7 @@ def create_app():
 
     app.include_router(router=kakao.router, tags=["JWT"], prefix="/jwt")
     app.include_router(router=microsoft.router, tags=["JWT"], prefix="/jwt")
-    app.include_router(router=users.router, tags=["Users"], prefix="/user")
+    app.include_router(router=users.router, tags=["Users"], prefix="/users")
     app.include_router(router=admin.router, tags=["Admin"], prefix="/admin")
 
     def custom_openapi():
