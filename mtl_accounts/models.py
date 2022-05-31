@@ -10,6 +10,7 @@ class MessageOk(BaseModel):
 
 class Role(str, Enum):
     admin = "admin"
+    student = "student"
     staff = "staff"
     default = "default"
 
