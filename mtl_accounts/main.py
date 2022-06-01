@@ -8,6 +8,7 @@ from fastapi.responses import JSONResponse
 from fastapi.routing import APIRoute
 from fastapi_jwt_auth import AuthJWT
 from fastapi_jwt_auth.exceptions import AuthJWTException
+from fastapi_pagination import add_pagination
 from pydantic import BaseModel
 from starlette.middleware.cors import CORSMiddleware
 
@@ -62,6 +63,8 @@ def create_app():
     app.include_router(router=microsoft.router, tags=["JWT"], prefix="/jwt")
     app.include_router(router=users.router, tags=["Users"], prefix="/users")
     app.include_router(router=admin.router, tags=["Admin"], prefix="/admin")
+
+    add_pagination(app)
 
     def custom_openapi():
         if app.openapi_schema:

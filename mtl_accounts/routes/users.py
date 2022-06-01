@@ -8,10 +8,12 @@ from mtl_accounts.database.crud import (
     create_mincraft,
     exists_mincraft,
     get_profile,
+    get_users,
 )
 from mtl_accounts.database.redis import redis_conn
+from mtl_accounts.database.schema import Page
 from mtl_accounts.errors import exceptions as ex
-from mtl_accounts.models import MessageOk, Minecraft
+from mtl_accounts.models import MessageOk, Minecraft, User
 from sqlalchemy.orm import Session
 from starlette.requests import Request
 
@@ -56,3 +58,13 @@ async def profile(request: Request, Authorize: AuthJWT = Depends(), session: Ses
     user_mail = Authorize.get_jwt_subject()
 
     return get_profile(session, user_mail)
+
+
+@router.get("", response_model=Page[User])
+async def users(request: Request, Authorize: AuthJWT = Depends(), session: Session = Depends(db.session)):
+    Authorize.jwt_required()
+    jwt = Authorize.get_raw_jwt()
+    if jwt["role"] not in ["staff", "admin"]:
+        raise ex.TokenInvalidEx
+
+    return get_users(session)
