@@ -1,5 +1,6 @@
 from typing import Dict
 
+from fastapi_pagination.ext.sqlalchemy import paginate
 from mtl_accounts.database.schema import Minecraft_Account, Users
 from mtl_accounts.models import Minecraft, OpenID, Role, User
 from sqlalchemy.orm import Session
@@ -43,3 +44,8 @@ def update_role(session: Session, email: str, role: Role):
     user.role = role.value
     session.commit()
     session.refresh(user)
+
+
+def get_users(session: Session):
+    users = session.query(Users)
+    return paginate(users)
