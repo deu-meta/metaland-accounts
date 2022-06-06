@@ -20,9 +20,9 @@ class MicrosoftCustomSSO(CustomSSOBase):
     @classmethod
     async def openid_from_response(cls, response: dict) -> OpenID:
         return OpenID(
-            display_name=response["displayName"],
-            given_name=response["givenName"],
-            job_title=response["jobTitle"],
-            email=response["mail"],
+            display_name=response.get("display_name") or response.get("displayName") or response.get("name") or None,
+            given_name=response.get("given_name") or response.get("givenName") or response.get("name") or None,
+            job_title=response.get("job_title") or response.get("jobTitle") or None,
+            email=response.get("email") or response.get("mail") or None,
             provider=cls.provider,
         )
