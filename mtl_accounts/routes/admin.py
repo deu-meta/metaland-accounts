@@ -1,11 +1,8 @@
-
 from fastapi import APIRouter, Depends
 from fastapi.security import HTTPBearer
 from fastapi_jwt_auth import AuthJWT
 from mtl_accounts.database.conn import db
-from mtl_accounts.database.crud import (
-    update_role,
-)
+from mtl_accounts.database.crud import update_role
 from mtl_accounts.errors import exceptions as ex
 from mtl_accounts.models import MessageOk, Role
 from sqlalchemy.orm import Session

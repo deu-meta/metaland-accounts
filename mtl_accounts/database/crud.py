@@ -19,10 +19,10 @@ def exists_mincraft(session: Session, id: str) -> bool:
     return False
 
 
-def create_or_update_user(session: Session, user: OpenID) -> User:
+def create_or_update_user(session: Session, user: OpenID, defaults: Dict = {}) -> User:
     updates = session.query(Users).filter(Users.email == user.email).update(user.dict())
     if not updates:
-        session.add(Users(**User(**user.dict()).dict()))
+        session.add(Users(**User(**{**user.dict(), **defaults}).dict()))
     session.commit()
 
     account = session.query(Users).filter(Users.email == user.email).first()
