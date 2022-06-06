@@ -39,13 +39,8 @@ async def kakao_login():
 async def kakao_callback(request: Request, Authorize: AuthJWT = Depends(), session: Session = Depends(db.session)):
     user = await kakao_sso.verify_and_process(request)
 
+    response = RedirectResponse(JWT_REDIRECT_URL)
     account = create_or_update_user(session, user)
-
-    access_token = Authorize.create_access_token(subject=account.id, user_claims=json.loads(account.json()))
-    response = RedirectResponse(f"{JWT_REDIRECT_URL}#access_token={access_token}")
-
     refresh_token = Authorize.create_refresh_token(subject=account.id, user_claims=json.loads(account.json()))
-
     Authorize.set_refresh_cookies(refresh_token, response, max_age=1209600)
-
     return response
