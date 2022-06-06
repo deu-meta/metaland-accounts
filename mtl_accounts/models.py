@@ -1,4 +1,6 @@
+from datetime import datetime
 from enum import Enum
+from typing import Optional
 
 from pydantic import Field
 from pydantic.main import BaseModel
@@ -23,9 +25,17 @@ class OpenID(BaseModel):
     provider: str = None
 
 
+class UserIn(BaseModel):
+    id: str
+    role: Optional[str]
+    phone_number: Optional[str]
+
+
 class User(OpenID):
     id: str = None
     role: str = Role.default.value
+    date_joined: datetime = None
+    last_login: datetime = None
 
     class Config:
         orm_mode = True
