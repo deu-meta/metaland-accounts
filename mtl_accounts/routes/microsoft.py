@@ -46,15 +46,10 @@ async def microsoft_callback(request: Request, Authorize: AuthJWT = Depends(), s
     if user.email.endswith("@office.deu.ac.kr"):
         defaults["role"] = Role.student
 
+    response = RedirectResponse(JWT_REDIRECT_URL)
     account = create_or_update_user(session, user, defaults)
-
-    access_token = Authorize.create_access_token(subject=account.id, user_claims=json.loads(account.json()))
-    response = RedirectResponse(f"{JWT_REDIRECT_URL}#access_token={access_token}")
-
     refresh_token = Authorize.create_refresh_token(subject=account.id, user_claims=json.loads(account.json()))
-
     Authorize.set_refresh_cookies(refresh_token, response, max_age=1209600)
-
     return response
 
 
