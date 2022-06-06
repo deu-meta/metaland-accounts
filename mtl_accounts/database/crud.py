@@ -1,8 +1,10 @@
+from datetime import datetime
 from typing import Dict
 
+import mtl_accounts.errors.exceptions as ex
 from fastapi_pagination.ext.sqlalchemy import paginate
 from mtl_accounts.database.schema import Minecraft_Account, Users
-from mtl_accounts.models import Minecraft, OpenID, Role, User
+from mtl_accounts.models import Minecraft, OpenID, User, UserIn
 from sqlalchemy.orm import Session
 
 
@@ -39,11 +41,12 @@ def get_profile(session: Session, user_mail: str) -> Dict:
     return profile
 
 
-def update_role(session: Session, email: str, role: Role):
-    user = session.query(Users).filter(Users.email == email).first()
-    user.role = role.value
+def update_profile(session: Session, user: UserIn):
+    updates = session.query(Users).filter(Users.id == user.id).update(user.dict())
+    if not updates:
+        raise ex.AccountNotExistsException()
     session.commit()
-    session.refresh(user)
+    return session.query(Users).get(user.id)
 
 
 def get_users(session: Session):
