@@ -19,13 +19,13 @@ def exists_mincraft(session: Session, id: str) -> bool:
     return False
 
 
-def create_or_update_user(session: Session, user: OpenID, defaults: Dict = {}) -> User:
-    updates = session.query(Users).filter(Users.email == user.email).update(user.dict())
+def create_or_update_user(session: Session, openid: OpenID, defaults: Dict = {}) -> User:
+    updates = session.query(Users).filter(and_(Users.provider == openid.provider, Users.email == openid.email)).update(openid.dict())
     if not updates:
-        session.add(Users(**User(**{**user.dict(), **defaults}).dict()))
+        session.add(Users(**User(**{**openid.dict(), **defaults}).dict()))
     session.commit()
 
-    account = session.query(Users).filter(Users.email == user.email).first()
+    account = session.query(Users).filter(Users.email == openid.email).first()
     return User.from_orm(account)  # https://pydantic-docs.helpmanual.io/usage/models/#orm-mode-aka-arbitrary-class-instances
 
 
