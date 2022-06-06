@@ -1,3 +1,4 @@
+import json
 import os
 
 from fastapi import APIRouter, Depends, Request
@@ -15,7 +16,7 @@ microsoft_sso = MicrosoftCustomSSO(
     client_id=os.getenv("MTL_ACCOUNTS_OAUTH2_MICROSOFT_CLIENT_ID"),
     client_secret=os.getenv("MTL_ACCOUNTS_OAUTH2_MICROSOFT_SECRET"),
     client_tenant=os.getenv("MTL_ACCOUNTS_OAUTH2_MICROSOFT_CLIENT_TENANT"),
-    redirect_uri=os.getenv("MTL_ACCOUNTS_OAUTH2_MICROSOFT_REDIRECT_URL"),
+    redirect_uri=os.getenv("MTL_ACCOUNTS_OAUTH2_MICROSOFT_REDIRECT_URI"),
     allow_insecure_http=True if os.getenv("MTL_ACCOUNTS_DEBUG", "false").lower() == "true" else False,
     use_state=False if os.getenv("MTL_ACCOUNTS_DEBUG", "false").lower() == "true" else True,
 )
@@ -47,10 +48,10 @@ async def microsoft_callback(request: Request, Authorize: AuthJWT = Depends(), s
 
     account = create_or_update_user(session, user, defaults)
 
-    access_token = Authorize.create_access_token(subject=account.id, user_claims=account.dict())
+    access_token = Authorize.create_access_token(subject=account.id, user_claims=json.loads(account.json()))
     response = RedirectResponse(f"{JWT_REDIRECT_URL}#access_token={access_token}")
 
-    refresh_token = Authorize.create_refresh_token(subject=account.id, user_claims=account.dict())
+    refresh_token = Authorize.create_refresh_token(subject=account.id, user_claims=json.loads(account.json()))
 
     Authorize.set_refresh_cookies(refresh_token, response, max_age=1209600)
 
@@ -74,4 +75,4 @@ def delete(Authorize: AuthJWT = Depends()):
     Authorize.jwt_refresh_token_required()
 
     Authorize.unset_jwt_cookies()
-    return {"msg": "Successfully logout"}
+    return {"message": "Successfully logout"}

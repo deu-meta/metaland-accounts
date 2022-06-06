@@ -8,7 +8,7 @@ from .base import CustomSSOBase
 
 class MicrosoftCustomSSO(CustomSSOBase):
     provider = "microsoft"
-    scope = ["openid"]
+    scope = ["email", "openid", "profile"]
     version = "v1.0"
 
     async def get_discovery_document(self) -> Dict[str, str]:
@@ -28,7 +28,7 @@ class MicrosoftCustomSSO(CustomSSOBase):
             provider=cls.provider,
         )
         if openid.display_name is None or openid.email is None:
-            insufficient_keys = ', '.join(filter(None, [openid.display_name, openid.email]))
-            raise SSOLoginError(406, f'Given OpenID data does not contain keys: {insufficient_keys}')
+            insufficient_keys = ", ".join(filter(None, [openid.display_name, openid.email]))
+            raise SSOLoginError(406, f"Given OpenID data does not contain keys: {insufficient_keys}")
 
         return openid

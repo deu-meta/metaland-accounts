@@ -16,16 +16,16 @@ class APIException(Exception):
         self,
         *,
         status_code: int = StatusCode.HTTP_500,
-        msg: str = None,
+        message: str = None,
         ex: Exception = None,
     ):
         self.status_code = status_code
-        self.msg = msg
+        self.message = message
         self.ex = ex
         super().__init__(ex)
 
 
-class AccountExistsEx(APIException):
+class AccountExistsException(APIException):
     def __init__(self, ex: Exception = None):
         super().__init__(
             status_code=StatusCode.HTTP_401,
@@ -34,37 +34,37 @@ class AccountExistsEx(APIException):
         )
 
 
-class AuthExpiredEx(APIException):
+class AuthExpiredException(APIException):
     def __init__(self, ex: Exception = None):
         super().__init__(
             status_code=StatusCode.HTTP_401,
-            msg=f"Authentication is expired",
+            message=f"Authentication is expired",
             ex=ex,
         )
 
 
-class NotFoundAuthEx(APIException):
+class NotFoundAuthException(APIException):
     def __init__(self, ex: Exception = None):
         super().__init__(
             status_code=StatusCode.HTTP_401,
-            msg=f"Authorization 요청 헤더가 없습니다.",
+            message=f"Authorization 요청 헤더가 없습니다.",
             ex=ex,
         )
 
 
-class TokenInvalidEx(APIException):
+class TokenInvalidException(APIException):
     def __init__(self, ex: Exception = None):
         super().__init__(
             status_code=StatusCode.HTTP_401,
-            msg=f"토큰값이 유효하지 않아 인증에 실패했습니다.",
+            message=f"토큰값이 유효하지 않아 인증에 실패했습니다.",
             ex=ex,
         )
 
 
-class TokenDecodeEx(APIException):
+class TokenDecodeException(APIException):
     def __init__(self, ex: Exception = None):
         super().__init__(
             status_code=StatusCode.HTTP_401,
-            msg=f"Authorization 요청 헤더의 토큰 타입이 유효하지 않습니다.",
+            message=f"Authorization 요청 헤더의 토큰 타입이 유효하지 않습니다.",
             ex=ex,
         )

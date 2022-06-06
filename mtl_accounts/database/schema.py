@@ -13,8 +13,8 @@ from sqlalchemy import TIMESTAMP, VARCHAR, Column, ForeignKey
 class Users(Base):
     __tablename__ = "users"
     __table_args__ = {"schema": "metaland_accounts"}
-    id = Column(VARCHAR(36), primary_key=True, index=True, default=uuid.uuid4)
-    email = Column(VARCHAR(50), primary_key=True, index=True)
+    id = Column(VARCHAR(36), primary_key=True, default=uuid.uuid4)
+    email = Column(VARCHAR(50), index=True)
     role = Column(VARCHAR(50), default=Role.default.value)
     phone_number = Column(VARCHAR(50), nullable=True)
     provider = Column(VARCHAR(50), nullable=True)
