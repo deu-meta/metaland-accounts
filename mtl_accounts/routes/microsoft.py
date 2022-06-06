@@ -75,4 +75,4 @@ def delete(Authorize: AuthJWT = Depends()):
     Authorize.jwt_refresh_token_required()
 
     Authorize.unset_jwt_cookies()
-    return {"msg": "Successfully logout"}
+    return {"message": "Successfully logout"}
