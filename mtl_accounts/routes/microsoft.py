@@ -4,7 +4,7 @@ from fastapi import APIRouter, Depends, Request
 from fastapi.responses import RedirectResponse
 from fastapi_jwt_auth import AuthJWT
 from mtl_accounts.database.conn import db
-from mtl_accounts.database.crud import create_or_update_user
+from mtl_accounts.database.crud import create_or_update_user, update_profile_last_login
 from mtl_accounts.models import Role
 from mtl_accounts.util.sso.microsoft import MicrosoftCustomSSO
 from sqlalchemy.orm import Session
@@ -58,11 +58,13 @@ async def microsoft_callback(request: Request, Authorize: AuthJWT = Depends(), s
 
 
 @router.post("/refresh")
-def refresh(Authorize: AuthJWT = Depends()):
+def refresh(Authorize: AuthJWT = Depends(), session: Session = Depends(db.session)):
     Authorize.jwt_refresh_token_required()
     current_user = Authorize.get_raw_jwt()
     current_user["type"] = "access"
     access_token = Authorize.create_access_token(subject=current_user["sub"], user_claims=current_user)
+
+    update_profile_last_login(session, current_user["sub"])
 
     return {"access_token": access_token}
 

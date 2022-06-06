@@ -13,7 +13,9 @@ CREATE TABLE metaland_accounts.users (
     provider character varying(50),
     "display_name" character varying(50) DEFAULT NULL::character varying,
     "given_name" character varying(50),
-    "job_title" character varying(50)
+    "job_title" character varying(50),
+    "date_joined" timestamp NOT NULL DEFAULT now(),
+    "last_login" timestamp NOT NULL DEFAULT now()
 );
 ALTER TABLE ONLY metaland_accounts.minecraft_account
 ADD CONSTRAINT minecraft_account_pkey PRIMARY KEY (id);

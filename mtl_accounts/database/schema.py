@@ -1,4 +1,5 @@
 import uuid
+from datetime import datetime
 from math import ceil
 from typing import Generic, List, Sequence, TypeVar
 
@@ -20,6 +21,8 @@ class Users(Base):
     display_name = Column(VARCHAR(50), nullable=True)
     given_name = Column(VARCHAR(50), nullable=True)
     job_title = Column(VARCHAR(50), nullable=True)
+    date_joined = Column(TIMESTAMP(), default=datetime.now)
+    last_login = Column(TIMESTAMP(), default=datetime.now)
 
 
 class Minecraft_Account(Base):
