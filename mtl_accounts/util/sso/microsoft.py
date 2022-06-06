@@ -28,7 +28,7 @@ class MicrosoftCustomSSO(CustomSSOBase):
             provider=cls.provider,
         )
         if openid.display_name is None or openid.email is None:
-            insufficient_keys = ', '.join(filter(None, [openid.display_name, openid.email]))
-            raise SSOLoginError(406, f'Given OpenID data does not contain keys: {insufficient_keys}')
+            insufficient_keys = ", ".join(filter(None, [openid.display_name, openid.email]))
+            raise SSOLoginError(406, f"Given OpenID data does not contain keys: {insufficient_keys}")
 
         return openid
