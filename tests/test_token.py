@@ -13,7 +13,7 @@ fake = Faker("ko_KR")
 
 def create_user():
     return {
-        "id": uuid.uuid4(),
+        "id": str(uuid.uuid4()),
         "display_name": fake.name(),
         "given_name": "null",
         "job_title": fake.job(),
