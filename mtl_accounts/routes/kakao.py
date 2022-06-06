@@ -13,7 +13,7 @@ router = APIRouter()
 
 kakao_sso = KakaoSSO(
     client_id=os.getenv("MTL_ACCOUNTS_OAUTH2_KAKAO_REST_API_KEY"),
-    client_secret=os.getenv("MTL_ACCOUNTS_OAUTH2_KAKAO_REST_API_KEY"),
+    client_secret=os.getenv("MTL_ACCOUNTS_OAUTH2_KAKAO_SECRET"),
     redirect_uri=os.getenv("MTL_ACCOUNTS_OAUTH2_KAKAO_REDIRECT_URI"),
     allow_insecure_http=True if os.getenv("MTL_ACCOUNTS_DEBUG", "false").lower() == "true" else False,
     use_state=False if os.getenv("MTL_ACCOUNTS_DEBUG", "false").lower() == "true" else True,
