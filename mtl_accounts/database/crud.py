@@ -4,7 +4,7 @@ from typing import Dict
 import mtl_accounts.errors.exceptions as ex
 from fastapi_pagination.ext.sqlalchemy import paginate
 from mtl_accounts.database.schema import Minecraft_Account, Users
-from mtl_accounts.models import Minecraft, OpenID, User, UserIn
+from sqlalchemy import and_
 from sqlalchemy.orm import Session
 
 
@@ -27,18 +27,15 @@ def create_or_update_user(session: Session, openid: OpenID, defaults: Dict = {})
         session.add(Users(**User(**{**openid.dict(), **defaults}).dict()))
     session.commit()
 
-    account = session.query(Users).filter(Users.email == openid.email).first()
+    account = session.query(Users).filter(and_(Users.provider == openid.provider, Users.email == openid.email)).first()
     return User.from_orm(account)  # https://pydantic-docs.helpmanual.io/usage/models/#orm-mode-aka-arbitrary-class-instances
 
 
-def get_profile(session: Session, user_mail: str) -> Dict:
-    profile = (
-        session.query(Minecraft_Account, Users)
-        .filter(Minecraft_Account.user_email == Users.email)
-        .filter(Minecraft_Account.user_email == user_mail)
-        .first()
-    )
-    return profile
+def get_profile(session: Session, user_id: str) -> Dict:
+    user = session.query(Users).get(user_id)
+    minecraft_accounts = session.query(Minecraft_Account).filter(Minecraft_Account.user_id == user_id).all()
+    user.minecraft_accounts = minecraft_accounts
+    return user
 
 
 def update_profile(session: Session, user: UserIn):

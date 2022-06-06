@@ -50,9 +50,9 @@ async def get_verify(request: Request, uuid: str, Authorize: AuthJWT = Depends()
 @router.get("/me")
 async def get_profile(request: Request, Authorize: AuthJWT = Depends(), session: Session = Depends(db.session)):
     Authorize.jwt_required()
-    user_mail = Authorize.get_jwt_subject()
+    user_id = Authorize.get_jwt_subject()
 
-    return crud.get_profile(session, user_mail)
+    return crud.get_profile(session, user_id)
 
 
 @router.get("", response_model=Page[User])
