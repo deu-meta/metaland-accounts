@@ -4,6 +4,7 @@ from typing import Dict
 import mtl_accounts.errors.exceptions as ex
 from fastapi_pagination.ext.sqlalchemy import paginate
 from mtl_accounts.database.schema import Minecraft_Account, Users
+from mtl_accounts.models import Minecraft, OpenID, User, UserIn
 from sqlalchemy import and_
 from sqlalchemy.orm import Session
 
