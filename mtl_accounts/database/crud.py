@@ -49,3 +49,8 @@ def update_role(session: Session, email: str, role: Role):
 def get_users(session: Session):
     users = session.query(Users)
     return paginate(users)
+
+
+def update_profile_last_login(session: Session, user_id: str):
+    session.query(Users).filter(Users.id == user_id).update({Users.last_login: datetime.now()})
+    session.commit()
