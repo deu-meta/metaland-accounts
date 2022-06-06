@@ -25,7 +25,7 @@ security = HTTPBearer()
 @router.post("/verify")
 async def post_verify(mincraftaccount: Minecraft, session: Session = Depends(db.session)):
     if exists_mincraft(session, mincraftaccount.id):
-        raise ex.AccountExistsEx
+        raise ex.AccountExistsException
 
     rd = redis_conn()
     uuid = uuid4()
@@ -44,7 +44,7 @@ async def get_verify(request: Request, uuid: str, Authorize: AuthJWT = Depends()
     minecraft = list(map(lambda s: s.decode("ascii"), minecraft))
 
     if minecraft is None:
-        raise ex.AuthExpiredEx
+        raise ex.AuthExpiredException
 
     create_mincraft(session, Minecraft(id=minecraft[0], provider=minecraft[1], display_name=minecraft[2]), user_email)
 
@@ -65,6 +65,6 @@ async def users(request: Request, Authorize: AuthJWT = Depends(), session: Sessi
     Authorize.jwt_required()
     jwt = Authorize.get_raw_jwt()
     if jwt["role"] not in ["staff", "admin"]:
-        raise ex.TokenInvalidEx
+        raise ex.TokenInvalidException
 
     return get_users(session)

@@ -25,7 +25,7 @@ class APIException(Exception):
         super().__init__(ex)
 
 
-class AccountExistsEx(APIException):
+class AccountExistsException(APIException):
     def __init__(self, ex: Exception = None):
         super().__init__(
             status_code=StatusCode.HTTP_401,
@@ -34,7 +34,7 @@ class AccountExistsEx(APIException):
         )
 
 
-class AuthExpiredEx(APIException):
+class AuthExpiredException(APIException):
     def __init__(self, ex: Exception = None):
         super().__init__(
             status_code=StatusCode.HTTP_401,
@@ -43,7 +43,7 @@ class AuthExpiredEx(APIException):
         )
 
 
-class NotFoundAuthEx(APIException):
+class NotFoundAuthException(APIException):
     def __init__(self, ex: Exception = None):
         super().__init__(
             status_code=StatusCode.HTTP_401,
@@ -52,7 +52,7 @@ class NotFoundAuthEx(APIException):
         )
 
 
-class TokenInvalidEx(APIException):
+class TokenInvalidException(APIException):
     def __init__(self, ex: Exception = None):
         super().__init__(
             status_code=StatusCode.HTTP_401,
@@ -61,7 +61,7 @@ class TokenInvalidEx(APIException):
         )
 
 
-class TokenDecodeEx(APIException):
+class TokenDecodeException(APIException):
     def __init__(self, ex: Exception = None):
         super().__init__(
             status_code=StatusCode.HTTP_401,
