@@ -24,6 +24,7 @@ class OpenID(BaseModel):
 
 
 class User(OpenID):
+    id: str = None
     role: str = Role.default.value
 
     class Config:

@@ -1,4 +1,5 @@
 import time
+import uuid
 from typing import Dict
 
 import pytest
@@ -12,6 +13,7 @@ fake = Faker("ko_KR")
 
 def create_user():
     return {
+        "id": str(uuid.uuid4()),
         "display_name": fake.name(),
         "given_name": "null",
         "job_title": fake.job(),
@@ -29,7 +31,7 @@ def build_access_token(
     expires = expires = issued_at - 1 if expired else issued_at + 900
 
     return Authorize._create_token(
-        subject=claims["display_name"],
+        subject=claims["id"],
         type_token="access",
         exp_time=expires,
         algorithm="HS256",
