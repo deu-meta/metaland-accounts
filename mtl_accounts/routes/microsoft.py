@@ -5,6 +5,7 @@ from fastapi.responses import RedirectResponse
 from fastapi_jwt_auth import AuthJWT
 from mtl_accounts.database.conn import db
 from mtl_accounts.database.crud import create_or_update_user
+from mtl_accounts.models import Role
 from mtl_accounts.util.sso.microsoft import MicrosoftCustomSSO
 from sqlalchemy.orm import Session
 
@@ -38,7 +39,13 @@ async def microsoft_login():
 @router.get("/microsoft/callback")
 async def microsoft_callback(request: Request, Authorize: AuthJWT = Depends(), session: Session = Depends(db.session)):
     user = await microsoft_sso.verify_and_process(request)
-    account = create_or_update_user(session, user)
+
+    defaults = {}
+    # 재학생일 시 역할을 student로 설정
+    if user.email.endswith("@office.deu.ac.kr"):
+        defaults["role"] = Role.student
+
+    account = create_or_update_user(session, user, defaults)
 
     access_token = Authorize.create_access_token(subject=account.email, user_claims=account.dict())
     response = RedirectResponse(f"{JWT_REDIRECT_URL}#access_token={access_token}")
