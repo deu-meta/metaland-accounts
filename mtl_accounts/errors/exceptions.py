@@ -34,6 +34,15 @@ class AccountExistsException(APIException):
         )
 
 
+class AccountNotExistsException(APIException):
+    def __init__(self, ex: Exception = None):
+        super().__init__(
+            status_code=StatusCode.HTTP_404,
+            message=f"해당 사용자가 존재하지 않습니다.",
+            ex=ex,
+        )
+
+
 class AuthExpiredException(APIException):
     def __init__(self, ex: Exception = None):
         super().__init__(

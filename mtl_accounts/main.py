@@ -15,7 +15,7 @@ from starlette.middleware.cors import CORSMiddleware
 from mtl_accounts.database.conn import db
 from mtl_accounts.errors.exceptions import APIException
 from mtl_accounts.middlewares.trusted_hosts import TrustedHostMiddleware
-from mtl_accounts.routes import admin, kakao, microsoft, users
+from mtl_accounts.routes import kakao, microsoft, users
 
 # https://nuggy875.tistory.com/106
 
@@ -62,7 +62,6 @@ def create_app():
     app.include_router(router=kakao.router, tags=["JWT"], prefix="/jwt")
     app.include_router(router=microsoft.router, tags=["JWT"], prefix="/jwt")
     app.include_router(router=users.router, tags=["Users"], prefix="/users")
-    app.include_router(router=admin.router, tags=["Admin"], prefix="/admin")
 
     add_pagination(app)
 
