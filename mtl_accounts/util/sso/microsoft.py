@@ -8,7 +8,7 @@ from .base import CustomSSOBase
 
 class MicrosoftCustomSSO(CustomSSOBase):
     provider = "microsoft"
-    scope = ["email", "openid", "profile"]
+    scope = ["email", "openid", "profile", "User.Read"]
     version = "v1.0"
 
     async def get_discovery_document(self) -> Dict[str, str]:
