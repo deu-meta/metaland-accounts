@@ -1,6 +1,7 @@
 from typing import Dict
 
-from fastapi_sso.sso.base import SSOLoginError
+from fastapi import HTTPException, status
+from fastapi.encoders import jsonable_encoder
 from mtl_accounts.models import OpenID
 
 from .base import CustomSSOBase
@@ -28,7 +29,14 @@ class MicrosoftCustomSSO(CustomSSOBase):
             provider=cls.provider,
         )
         if openid.display_name is None or openid.email is None:
-            insufficient_keys = ", ".join(filter(None, [openid.display_name, openid.email]))
-            raise SSOLoginError(406, f"Given OpenID data does not contain keys: {insufficient_keys}")
+            raise HTTPException(
+                status.HTTP_406_NOT_ACCEPTABLE,
+                f"Given OpenID data does not satisfy constraint.",
+                content=jsonable_encoder(
+                    {
+                        "openid": openid,
+                    }
+                ),
+            )
 
         return openid
