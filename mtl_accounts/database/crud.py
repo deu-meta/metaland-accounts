@@ -1,18 +1,28 @@
 from datetime import datetime
-from typing import Dict
+from typing import Dict, Optional
 
 import mtl_accounts.errors.exceptions as ex
 from fastapi_pagination.ext.sqlalchemy import paginate
 from mtl_accounts.database.schema import Minecraft_Account, Users
-from mtl_accounts.models import Minecraft, OpenID, User, UserIn
+from mtl_accounts.models import (
+    MinecraftAccountIn,
+    MinecraftAccountOut,
+    OpenID,
+    User,
+    UserIn,
+)
 from sqlalchemy import and_
 from sqlalchemy.orm import Session
 
 
-def create_mincraft(session: Session, minecraft: Minecraft, email: str):
-    users = Minecraft_Account(id=minecraft.id, user_email=email, provider=minecraft.provider, display_name=minecraft.display_name)
-    session.add(users)
+def create_mincraft(session: Session, minecraft: MinecraftAccountIn, user_id: str):
+    minecraft_account = Minecraft_Account(id=minecraft.id, user_id=user_id, provider=minecraft.provider, display_name=minecraft.display_name)
+    session.add(minecraft_account)
     session.commit()
+
+
+def get_minecraft_account(session: Session, id: str) -> Optional[MinecraftAccountOut]:
+    return session.query(Minecraft_Account).get(id)
 
 
 def exists_mincraft(session: Session, id: str) -> bool:
