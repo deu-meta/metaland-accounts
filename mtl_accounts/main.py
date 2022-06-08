@@ -13,7 +13,6 @@ from pydantic import BaseModel
 from starlette.middleware.cors import CORSMiddleware
 
 from mtl_accounts.database.conn import db
-from mtl_accounts.errors.exceptions import APIException
 from mtl_accounts.middlewares.trusted_hosts import TrustedHostMiddleware
 from mtl_accounts.routes import kakao, microsoft, minecraft_accounts, users
 
@@ -53,10 +52,6 @@ def create_app():
 
     @app.exception_handler(AuthJWTException)
     def authjwt_exception_handler(request: Request, exc: AuthJWTException):
-        return JSONResponse(status_code=exc.status_code, content={"detail": exc.message})
-
-    @app.exception_handler(Exception)
-    def exception_handler(request: Request, exc: APIException):
         return JSONResponse(status_code=exc.status_code, content={"detail": exc.message})
 
     app.include_router(router=kakao.router, tags=["JWT"], prefix="/jwt")
