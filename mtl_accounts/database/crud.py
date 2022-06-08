@@ -52,7 +52,7 @@ def get_profile(session: Session, user_id: str) -> Dict:
 def update_profile(session: Session, user: UserIn):
     updates = session.query(Users).filter(Users.id == user.id).update(user.dict())
     if not updates:
-        raise ex.AccountNotExistsException()
+        raise ex.AccountNotFoundException()
     session.commit()
     return session.query(Users).get(user.id)
 

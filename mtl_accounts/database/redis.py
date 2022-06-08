@@ -10,5 +10,7 @@ def redis_conn():
         REDIS_DATABASE = os.getenv("REDIS_DATABASE")
         rd = redis.Redis(host=REDIS_HOST, port=REDIS_PORT, db=REDIS_DATABASE)
     except:
-        print("redis connection failure")
+        print("redis connection failed")
+        raise
+
     return rd
