@@ -1,3 +1,6 @@
+from fastapi import HTTPException, status
+
+
 class StatusCode:
     HTTP_500 = 500
     HTTP_400 = 400
@@ -34,12 +37,11 @@ class AccountExistsException(APIException):
         )
 
 
-class AccountNotExistsException(APIException):
-    def __init__(self, ex: Exception = None):
+class AccountNotExistsException(HTTPException):
+    def __init__(self, detail: str = None):
         super().__init__(
-            status_code=StatusCode.HTTP_404,
-            message=f"해당 사용자가 존재하지 않습니다.",
-            ex=ex,
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=detail or f"해당 사용자가 존재하지 않습니다.",
         )
 
 

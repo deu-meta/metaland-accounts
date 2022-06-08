@@ -8,6 +8,7 @@ from fastapi_pagination.bases import AbstractPage, AbstractParams
 from mtl_accounts.database.conn import Base
 from mtl_accounts.models import Role
 from sqlalchemy import TIMESTAMP, VARCHAR, Column, ForeignKey
+from sqlalchemy.orm import relationship
 
 
 class Users(Base):
@@ -32,6 +33,8 @@ class Minecraft_Account(Base):
     user_id = Column(VARCHAR(50), ForeignKey("metaland_accounts.users.id"))
     provider = Column(VARCHAR(50), nullable=True)
     display_name = Column(VARCHAR(50), nullable=True)
+
+    user = relationship("Users")
 
 
 T = TypeVar("T")

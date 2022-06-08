@@ -41,7 +41,19 @@ class User(OpenID):
         orm_mode = True
 
 
-class Minecraft(BaseModel):
+class MinecraftProvider(str, Enum):
+    java = "java"
+    bedrock = "bedrock"
+
+
+class MinecraftAccountIn(BaseModel):
     id: str = None
     provider: str = None
     display_name: str = None
+
+
+class MinecraftAccountOut(BaseModel):
+    id: str = None
+    provider: str = None
+    display_name: str = None
+    user: User = None
